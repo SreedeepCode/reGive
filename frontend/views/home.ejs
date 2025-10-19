@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,49 +12,47 @@
 <body>
     <%- include('partials/navbar') %>
 
-
-
-
     <section id="donate">
         <span>Donate to those who Need</span>
         <button id="donate-btn">Donate</button>
     </section>
-        </section>
-        <section id="leaderboard" class="leaderboard-section">
-  <h2>Top Donors</h2>
-  <ul id="leaderboardList"></ul>
-</section>
+    </section>
+    <section id="leaderboard" class="leaderboard-section">
+        <h2>Top Donors</h2>
+        <ul id="leaderboardList"></ul>
+    </section>
 
     <section id="small-catalog">
-      <span>Frequently Donated Items</span>
-      <div id="listings">
-        <ul id="list">
-          <% 
-            // Check if items were passed from the backend, defaulting to empty array
-            const displayItems = typeof frequentItems !== 'undefined' ? frequentItems : [];
-          %>
-          
-          <% displayItems.forEach(item => { %>
-            <a href="/api/search?q=<%= item.name %>" class="item">
-              <img 
-                src="<%= item.imageURL && item.imageURL.length > 0 ? item.imageURL[0] : '/img/stock-item.jpg' %>" 
-                alt="<%= item.name %> image" 
-                onerror="this.onerror=null; this.src='/img/stock-item.jpg';"
-              />
-              
-              <span class="item-name"><%= item.name %></span>
-              <span class="item-desc"><%= item.description %></span>
-            </a>
-          <% }); %>
+        <span>Frequently Donated Items</span>
+        <div id="listings">
+            <ul id="list">
+                <% // Check if items were passed from the backend, defaulting to empty array const
+                    displayItems=typeof frequentItems !=='undefined' ? frequentItems : []; %>
 
-          <% if (displayItems.length === 0) { %>
-            <p>No frequently donated items found yet. Please check back later!</p>
-          <% } %>
-        </ul>
-      </div>
+                <% displayItems.forEach(item=> { %>
+                    <a href="/api/search?q=<%= item.name %>" class="item">
+                        <img src="<%= item.imageURL && item.imageURL.length > 0 ? item.imageURL[0] : '/img/stock-item.jpg' %>"
+                            alt="<%= item.name %> image"
+                            onerror="this.onerror=null; this.src='/img/stock-item.jpg';" />
 
+                        <span class="item-name">
+                            <%= item.name %>
+                        </span>
+                        <span class="item-desc">
+                            <%= item.description %>
+                        </span>
+                    </a>
+                <% }); %>
+
+                <% if (displayItems.length === 0) { %>
+                    <p>No frequently donated items found yet. Please check back later!</p>
+                <% } %>
+            </ul>
+        </div>
+    </section>
 
     <%- include('partials/footer') %>
+
 </body>
 
 </html>

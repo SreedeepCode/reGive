@@ -9,10 +9,9 @@ import dotenv from "dotenv";
 import User from "./models/users.js";
 import adminRoutes from "./routes/adminroutes.js";
 import donationRoutes from "./routes/donationroutes.js";
-import cookieParser from "cookie-parser";
+import cookieParser from 'cookie-parser';
 import itemRoutes from "./routes/itemroutes.js";
 import homeRoutes from "./routes/homeRoutes.js";
-import leaderboardRoutes from "./routes/leaderboardroutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authroutes.js";
 import cors from "cors";
@@ -223,14 +222,14 @@ app.use("/api/user", userRoutes);
 app.use("/", homeRoutes);
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
+    console.error(err.stack);
+    res.status(500).json({ error: "Something went wrong!" });
 });
 
 app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
+    res.status(404).json({ error: "Route not found" });
 });
 
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+    console.log(`Server running at http://localhost:${port}`);
 });
