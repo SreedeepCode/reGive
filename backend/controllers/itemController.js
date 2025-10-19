@@ -5,7 +5,7 @@ import Item from "../models/items.js";
 import Category from "../models/categories.js";
 
 export const getSearchResults = async (req, res) => {
-  const query = req.query.q; // e.g., "Stationery" or "baby doll"
+  const query = req.query.q;
 
   if (!query) {
     return res.render("../frontend/views/listing.ejs", { items: [] });

@@ -1,6 +1,6 @@
-// What ever is in this is temporary only for testing purposes
-// This file will be modified once the admin dashboard is fully functional
-// This file is just to test if the frontend can fetch data from the backend
+/* What ever is in this is temporary only for testing purposes
+   This file will be modified once the admin dashboard is fully functional
+   This file is just to test if the frontend can fetch data from the backend */
 document.addEventListener("DOMContentLoaded", () => {
   fetch("/api/admin/get-stats")
     .then((res) => res.json())
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.target.classList.contains("resolve-report-btn")) {
           const id = e.target.dataset.id;
           fetch("/api/admin/reports/" + id + "/resolve", {
-            //todo : implement the resolve btu havent decided what to do in this
+            //todo : implement the resolve but havent decided what to do in this
             method: "POST",
           }).then(() => e.target.closest("tr").remove());
         }
