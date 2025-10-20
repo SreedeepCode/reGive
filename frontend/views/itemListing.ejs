@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Search Results | reGive</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/searchstyle.css">
+</head>
+
+<body>
+    <div class="search-nav-wrapper">
+        <button id="Back-Button">Back</button>
+    </div>
+
+    <main class="results-page">
+        <% if (items.length===0) { %>
+            <p>No results found.</p>
+            <% } else { %>
+                <ul>
+                    <% items.forEach(item=> { %>
+                        <li style="margin-bottom:20px;">
+
+                            <div class="image-gallery">
+                                <div class="gallery-images">
+                                    <% // Use imageURL array. If empty, fall back to stock image. const
+                                        images=item.imageURL && item.imageURL.length> 0 ? item.imageURL :
+                                        ['/img/stock-item.jpg'];
+                                        images.forEach((url, index) => {
+                                        // Ensure proper URL path: if it's not absolute or already a path, prepend
+                                        /uploads/
+                                        const imageSrc = url.startsWith('http') || url.startsWith('/') ? url :
+                                        '/uploads/' + url;
+                                        %>
+                                        <img src="<%= imageSrc %>" alt="<%= item.name %> image <%= index + 1 %>"
+                                            data-index="<%= index %>"
+                                            class="gallery-image <%= index === 0 ? 'active' : '' %>" width="150">
+                                        <% }); %>
+                                </div>
+
+                                <% if (images.length> 1) { %>
+                                    <button class="prev-button" onclick="changeSlide(this, -1)">&#10094;</button>
+                                    <button class="next-button" onclick="changeSlide(this, 1)">&#10095;</button>
+                                    <% } %>
+                            </div>
+
+                            <p><strong>Name:</strong>
+                                <%= item.name %>
+                            </p>
+                            <p><strong>Description:</strong><br>
+                                <%= item.description %></br>
+                            </p>
+                            <p><strong>Category:</strong>
+                                <%= item.categoryId.name %>
+                            </p>
+                            <p><strong>Subcategory:</strong>
+                                <%= item.subcategory %>
+                            </p>
+                            <p><strong>Location:</strong>
+                                <%= item.pickup %>
+                            </p>
+                            <p><strong>Donor:</strong>
+                                <%= item.donorId.displayName%>
+                            </p>
+                            <p><strong>Donor Contact:</strong>
+                                <%= item.donorId.email %>
+                            </p>
+                            <hr>
+                        </li>
+                        <% }) %>
+                </ul>
+                <% } %>
+    </main>
+
+    <script>
+        // Inside your <script> block near the bottom of listing.ejs
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // ... existing gallery setup (if any) ...
+
+            const backButton = document.getElementById('Back-Button');
+
+            if (backButton) {
+                // --- ADD THIS CLICK EVENT LISTENER ---
+                backButton.addEventListener('click', () => {
+                    // This tells the browser to navigate to the home page (which is '/')
+                    window.location.href = '/';
+                });
+                // ------------------------------------
+            }
+
+            // ... rest of your existing JS (like the changeSlide function)
+        });
+        function changeSlide(button, n) {
+            const gallery = button.closest('.image-gallery');
+            const images = gallery.querySelectorAll('.gallery-image');
+
+            if (images.length === 0) return;
+
+            let currentImage = gallery.querySelector('.gallery-image.active');
+            let currentIndex = 0;
+
+            if (currentImage) {
+                currentIndex = parseInt(currentImage.getAttribute('data-index'));
+                currentImage.classList.remove('active');
+            } else {
+                // Fallback: This handles the edge case where the active class is somehow missing
+                currentIndex = 0;
+                images[0].classList.remove('active');
+            }
+
+            // Calculate the new index with wrap-around logic
+            let newIndex = currentIndex + n;
+            if (newIndex >= images.length) {
+                newIndex = 0;
+            }
+            if (newIndex < 0) {
+                newIndex = images.length - 1;
+            }
+
+            // Show the next image
+            let nextImage = images[newIndex];
+            nextImage.classList.add('active');
+        }
+
+        // Initial setup: ensures only the first image is visible when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.image-gallery').forEach(gallery => {
+                const images = gallery.querySelectorAll('.gallery-image');
+                if (images.length > 0) {
+                    // This logic ensures only the first image is active/visible on load.
+                    images.forEach((img, index) => {
+                        if (index !== 0) {
+                            img.classList.remove('active');
+                        } else {
+                            // Only force the first one to be active if it's not already
+                            if (!img.classList.contains('active')) {
+                                img.classList.add('active');
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

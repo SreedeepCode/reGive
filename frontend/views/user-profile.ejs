@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile | reGive</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="script.js"></script>
+    <script>
+        //Edit Profile Function.
+        document.addEventListener("DOMContentLoaded", function () {
+            const editBtn = document.getElementById("edit-profile-btn");
+            const profileInfo = document.getElementById("profile-info");
+            const editForm = document.getElementById("edit-profile-form");
+
+            editBtn.addEventListener("click", function () {
+                profileInfo.style.display = "none";
+                editForm.style.display = "block";
+            });
+
+
+
+            document
+                .getElementById("cancel-profile-btn")
+                .addEventListener("click", function (e) {
+                    e.preventDefault();
+                    editForm.style.display = "none";
+                    profileInfo.style.display = "block";
+                });
+        });
+    </script>
+  </head>
+
+  <body>
+    <%- include('partials/navbar') %>
+
+    <div class="container" id="userprof">
+        <section class="profile-section">
+            <h2>User Profile</h2>
+            <div class="profile-basic">
+                <img src="img/avatar.jpg" alt="Profile Picture" class="avatar" />
+                <div>
+                    <div id="profile-info">
+                        <div>
+                            <strong>Name:</strong> <span id="profile-name"><%= user.displayName %></span>
+                        </div>
+                        <div>
+                            <strong>Email:</strong>
+                            <span id="profile-email"><%= user.email %></span>
+                        </div>
+                        <div>
+                            <strong>Phone:</strong>
+                            <span id="profile-phone"><%= user.phone || 'Not provided' %></span>
+                        </div>
+                        <div>
+                            <strong>Location:</strong>
+                            <span id="profile-location"><%= user.address || 'Not provided' %></span>
+                        </div>
+                        <div><strong>Joined Date:</strong> <%= new Date(user.joinedAt).toLocaleDateString() %></div>
+                        <button id="edit-profile-btn">Edit Profile</button>
+                        <button>Change Password</button>
+                    </div>
+
+                    <!-- Edit Form -->
+                    <form id="edit-profile-form" action="/user-profile" method="POST" style="display: none">
+                        <div>
+                            <label>Name: <input type="text" name="displayName" id="edit-name" value="<%= user.displayName %>" /></label>
+                        </div>
+                        <div>
+                            <label>Email:
+                                <input type="email" name="email" id="edit-email" value="<%= user.email %>" readonly /></label>
+                        </div>
+                        <div>
+                            <label>Phone:
+                                <input type="text" name="phone" id="edit-phone" value="<%= user.phone || '' %>" /></label>
+                        </div>
+                        <div>
+                            <label>Location:
+                                <input type="text" name="address" id="edit-location" value="<%= user.address || '' %>" /></label>
+                        </div>
+                        <button type="submit" id="save-profile-btn">Save</button>
+                        <button id="cancel-profile-btn">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <section class="profile-section">
+            <h2>Rewards & Stats</h2>
+            <div class="profile-stats">
+                <div><strong>Total Reward Points:</strong> <%= user.points %></div>
+                <div><strong>Items Donated:</strong> 12</div>
+            </div>
+        </section>
+        <section class="profile-section">
+            <h2>Active Listings</h2>
+            <div class="listings">
+                <div class="listing-item">
+                    <img src="img/stock-item.jpg" alt="Item Image" />
+                    <div>
+                        <div><strong>Name:</strong> Stationary Set</div>
+                        <div><strong>Category:</strong> Stationary</div>
+                        <div><strong>Condition:</strong> New</div>
+                        <div><strong>Date Posted:</strong> 01 Aug 2025</div>
+                        <button>Edit</button>
+                        <button>Remove</button>
+                    </div>
+                </div>
+                <div class="listing-item">
+                    <img src="img/stock-item.jpg" alt="Item Image" />
+                    <div>
+                        <div><strong>Name:</strong> Backpack</div>
+                        <div><strong>Category:</strong> Bags</div>
+                        <div><strong>Condition:</strong> Used</div>
+                        <div><strong>Date Posted:</strong> 15 Jul 2025</div>
+                        <button>Edit</button>
+                        <button>Remove</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="profile-section">
+            <h2>Donation History</h2>
+            <table class="donation-history">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Category</th>
+                        <th>Date Donated</th>
+                        <th>Points Earned</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Stationary Set</td>
+                        <td>Stationary</td>
+                        <td>02 Aug 2025</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>Backpack</td>
+                        <td>Bags</td>
+                        <td>16 Jul 2025</td>
+                        <td>15</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <%- include('partials/footer') %>
+  </body>
+</html>

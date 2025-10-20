@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Initial Setup | reGive</title>
+        <link rel="stylesheet" href="/css/style.css">
+        <style>
+            .bg-tint {
+                background-color: rgba(0, 128, 128, 0.75);
+                width: 100%;
+                height: 100%;
+                margin-top: 0px;
+                display: flex;
+                align-items: center;
+            }
+
+            .setup-container {
+                width: 600px;
+                height: 500px;
+                margin: 50px auto;
+                padding: 20px;
+                border: 1px solid #ddd;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 0 8px rgba(0,0,0,0.1);
+            }
+            .setup-container h2 {
+                text-align: center;
+                margin-bottom: 15px;
+            }
+            .setup-container input {
+                width: 100%;
+                padding: 10px;
+                margin: 6px 0;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            .setup-container button {
+                width: 100%;
+                padding: 10px;
+                margin-top: 8px;
+                background: #28a745;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            .setup-container button:hover {
+                background: #218838;
+            }
+        </style>
+    </head>
+    <body>
+
+        <%- include('partials/navbar') %>
+
+        <div class="bg-tint">
+            <div class="setup-container">
+                <h2>Complete Your Profile</h2>
+                <form action="/initial-login" method="POST">
+                    <!-- Pre-fill name and email from Google if available -->
+                    <input type="text" name="displayName" placeholder="Full Name" value="<%= user?.displayName || '' %>" required>
+                    <input type="tel" name="phone" placeholder="Phone Number" pattern="[0-9]{10}" required>
+                    <input type="text" name="address" placeholder="Address" required>
+                    <button type="submit">Save & Continue</button>
+                </form>
+            </div>
+        </div>
+
+        <%- include('partials/footer') %>
+    </body>
+</html>

@@ -1,0 +1,163 @@
+/* ================================================= */
+/* 1. OVERRIDES FOR THE SEARCH RESULTS PAGE LAYOUT */
+/* ================================================= */
+
+/* Override the full-screen background image set in style.css for the results page */
+
+
+
+
+.search-nav-wrapper {
+    /* Get rid of the global body background for the whole page */
+      display: flex;
+  align-items: center;
+  top: 0;
+  left: 0;
+  width: 100%;
+  justify-content: space-between;
+   min-height: 105px !important;
+  padding: 1rem 2rem;
+  position: fixed;
+  z-index: 1000;
+  background-color: rgba(0, 128, 128, 0.85);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);                                            
+      /* Optional: Adjust if you need to pull content up */
+}
+
+
+
+
+#Back-Button {
+    /* Base styles */
+    display: inline-block !important; 
+    padding: 8px 15px !important;
+    background-color: #f9f9f9 !important; /* Light background */
+    color: teal !important; 
+    font-weight: bold !important;
+    font-size: 16px !important;
+    border: 2px solid teal !important;
+    border-radius: 8px !important;
+    cursor: pointer; 
+    
+    /* Resetting conflicting styles */
+    font-family: inherit !important;
+    margin: 0 !important; 
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+#Back-Button:hover {
+    background-color: teal !important;
+    color: white !important;
+    box-shadow: 0 4px 8px rgba(0, 128, 128, 0.4) !important;
+}
+
+/* --- 3. FIX BODY PADDING (Since we removed the nav override) --- */
+
+/* The main content needs padding below the new 80px tall wrapper */
+.results-page {
+    /* Ensure there's enough space under the new fixed/tall top bar */
+    padding-top: 100px !important; 
+    /* ... rest of your results-page styles ... */
+}
+* after button */
+.results-page {
+    /* Critical: Set a solid background and padding to clear the fixed navbar */
+    background-color: white !important; 
+    padding-top: 100px; 
+    padding-bottom: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
+    min-height: calc(100vh - 50px); 
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Ensure the body is no longer covered by the full-screen image for this page */
+body {
+    background-image: none !important;
+    background-size: auto !important;
+    background-attachment: scroll !important;
+    background-color: #f0f7f7 !important; /* Use a light color theme */
+}
+
+/* Style the unordered list that holds all search results */
+.results-page ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Style each individual search result item container */
+.results-page li {
+    display: flex;
+    gap: 25px; 
+    align-items: flex-start;
+    padding: 20px;
+    margin-bottom: 10px;
+    background-color: #ffffff; /* White background for the item box */
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 128, 128, 0.15); /* Soft shadow with teal hint */
+    border: 1px solid #e0f7fa; /* Light border */
+}
+
+.results-page li p strong {
+    /* Style for the strong text within the results */
+    min-width: 100px;
+    display: inline-block;
+    color: teal;
+}
+
+/* ================================================= */
+/* 2. IMAGE GALLERY (CAROUSEL) STYLES */
+/* ================================================= */
+
+.image-gallery {
+    position: relative;
+    width: 150px; 
+    height: 150px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 2px solid teal;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.gallery-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    display: none; /* Controlled by JS */
+}
+.gallery-image.active {
+    display: block !important;
+}
+
+/* Style for the navigation buttons (Arrows) */
+.prev-button, .next-button {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 5px 8px; 
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    background-color: rgba(0,0,0,0.6);
+    z-index: 10;
+    border-radius: 4px;
+    opacity: 0.9;
+    transition: opacity 0.2s ease;
+}
+
+.next-button {
+    right: 5px;
+}
+.prev-button {
+    left: 5px;
+}
+
+.prev-button:hover, .next-button:hover {
+    opacity: 1;
+    background-color: rgba(0, 128, 128, 0.8); /* Teal hover */
+}
