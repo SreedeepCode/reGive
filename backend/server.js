@@ -14,6 +14,8 @@ import itemRoutes from "./routes/itemRoutes.js";
 import homeRoutes from "./routes/homeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authroutes.js";
+import frequentroutes from "./routes/frequentroutes.js"
+import leaderboardRoutes from "./routes/leaderboardroutes.js"
 import cors from "cors";
 import {
   generateAccessToken,
@@ -216,6 +218,7 @@ app.post("/api/user/initial-setup", ensureAuthenticated, async (req, res) => {
 
 app.use("/api/donation", donationRoutes);
 app.use("/api", leaderboardRoutes);
+app.use("/api/frequent",frequentroutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/item", itemRoutes);
