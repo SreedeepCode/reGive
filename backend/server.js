@@ -19,6 +19,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "./middleware/verify.js";
+import leaderboardRoutes from './routes/leaderboardroutes.js'
 
 dotenv.config();
 
