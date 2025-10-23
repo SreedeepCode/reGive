@@ -3,144 +3,109 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Results | reGive</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/searchstyle.css">
 </head>
 
 <body>
+    <!-- Assuming you have a partial for the main navigation/header -->
+    <!-- If your navbar is not a partial, you may need to include the HTML for it here. -->
+
+    <!-- This wrapper is likely for the back button and sits below the main navbar -->
     <div class="search-nav-wrapper">
-        <button id="Back-Button">Back</button>
+        <button id="Back-Button">Back to Home</button>
     </div>
 
     <main class="results-page">
+        <h2>Search Results</h2>
+        
         <% if (items.length===0) { %>
-            <p>No results found.</p>
-            <% } else { %>
-                <ul>
-                    <% items.forEach(item=> { %>
-                        <li style="margin-bottom:20px;">
+        <p class="no-results-message">No results found matching your query. Please try searching for a different item or category.</p>
+        <% } else { %>
+        
+        <!-- Main container for the card grid -->
+        <div class="item-card-grid"> 
+            <% items.forEach(item=> { %>
+            
+            <!-- Individual Item Card -->
+            <div class="item-card">
+                
+                <!-- NEW LOCATION: Text Content for Name and Category (TOP) -->
+                <div class="card-content-top">
+                    <p class="item-name" onclick="window.location.href='/item/<%= item._id %>'">
+                        <%= item.name %>
+                    </p>
 
-                            <div class="image-gallery">
-                                <div class="gallery-images">
-                                    <% // Use imageURL array. If empty, fall back to stock image. const
-                                        images=item.imageURL && item.imageURL.length> 0 ? item.imageURL :
-                                        ['/img/stock-item.jpg'];
-                                        images.forEach((url, index) => {
-                                        // Ensure proper URL path: if it's not absolute or already a path, prepend
-                                        /uploads/
-                                        const imageSrc = url.startsWith('http') || url.startsWith('/') ? url :
-                                        '/uploads/' + url;
-                                        %>
-                                        <img src="<%= imageSrc %>" alt="<%= item.name %> image <%= index + 1 %>"
-                                            data-index="<%= index %>"
-                                            class="gallery-image <%= index === 0 ? 'active' : '' %>" width="150">
-                                        <% }); %>
-                                </div>
+                    <!-- Display Category Name -->
+                    <% if (item.categoryId && item.categoryId.name) { %>
+                        <p class="item-category">
+                            <%= item.categoryId.name %>
+                        </p>
+                    <% } %>
+                </div>
 
-                                <% if (images.length> 1) { %>
-                                    <button class="prev-button" onclick="changeSlide(this, -1)">&#10094;</button>
-                                    <button class="next-button" onclick="changeSlide(this, 1)">&#10095;</button>
-                                    <% } %>
-                            </div>
+                <!-- Image Container (MIDDLE) -->
+                <div class="card-image-container" onclick="window.location.href='/item/<%= item._id %>'">
+                    <% 
+                        // Use the first image URL from the array. Fallback to stock image.
+                        const imageUrls = item.imageURL && item.imageURL.length > 0 ? item.imageURL : ['/img/stock-item.jpg'];
+                        const firstImage = imageUrls[0];
+                        const imageSrc = firstImage.startsWith('http') || firstImage.startsWith('/') ? firstImage : '/uploads/' + firstImage;
+                    %>
+                    <img src="<%= imageSrc %>" 
+                         alt="<%= item.name %> image" 
+                         class="card-image" 
+                         onerror="this.onerror=null; this.src='/img/stock-item.jpg';" >
+                </div>
 
-                            <p><strong>Name:</strong>
-                                <%= item.name %>
-                            </p>
-                            <p><strong>Description:</strong><br>
-                                <%= item.description %></br>
-                            </p>
-                            <p><strong>Category:</strong>
-                                <%= item.categoryId.name %>
-                            </p>
-                            <p><strong>Subcategory:</strong>
-                                <%= item.subcategory %>
-                            </p>
-                            <p><strong>Location:</strong>
-                                <%= item.pickup %>
-                            </p>
-                            <p><strong>Donor:</strong>
-                                <%= item.donorId.displayName%>
-                            </p>
-                            <p><strong>Donor Contact:</strong>
-                                <%= item.donorId.email %>
-                            </p>
-                            <hr>
-                        </li>
-                        <% }) %>
-                </ul>
-                <% } %>
+                <!-- Text Content for Description (BELOW IMAGE) -->
+                <div class="card-content-bottom">
+                    <p class="item-description" onclick="window.location.href='/item/<%= item._id %>'">
+                        <!-- Truncate description for card view -->
+                        <%= item.description.substring(0, 100) + (item.description.length > 100 ? '...' : '') %>
+                    </p>
+                </div>
+
+
+                <!-- Action Bar (Price/Button - BOTTOM) -->
+                <div class="card-actions">
+                    <% if (item.price > 0) { %>
+                        <!-- BUY Item: Show Price on the left and Buy button on the right -->
+                        <div class="item-price buy-price">
+                            $<%= item.price.toFixed(2) %>
+                        </div>
+                        <button class="action-button buy-button" onclick="window.location.href='/item/<%= item._id %>?action=buy'">
+                            Buy
+                        </button>
+                    <% } else { %>
+                        <!-- FREE Item: Show "FREE" label and Claim button -->
+                        <div class="item-price item-free">
+                            FREE
+                        </div>
+                        <button class="action-button claim-button" onclick="window.location.href='/item/<%= item._id %>?action=claim'">
+                            Claim
+                        </button>
+                    <% } %>
+                </div>
+                <!-- End Action Bar -->
+            </div>
+            <% }) %>
+        </div>
+        <% } %>
     </main>
 
     <script>
-        // Inside your <script> block near the bottom of listing.ejs
-
+        // Back Button Logic
         document.addEventListener('DOMContentLoaded', () => {
-            // ... existing gallery setup (if any) ...
-
             const backButton = document.getElementById('Back-Button');
-
             if (backButton) {
-                // --- ADD THIS CLICK EVENT LISTENER ---
                 backButton.addEventListener('click', () => {
-                    // This tells the browser to navigate to the home page (which is '/')
+                    // Navigate back to the main homepage
                     window.location.href = '/';
                 });
-                // ------------------------------------
             }
-
-            // ... rest of your existing JS (like the changeSlide function)
-        });
-        function changeSlide(button, n) {
-            const gallery = button.closest('.image-gallery');
-            const images = gallery.querySelectorAll('.gallery-image');
-
-            if (images.length === 0) return;
-
-            let currentImage = gallery.querySelector('.gallery-image.active');
-            let currentIndex = 0;
-
-            if (currentImage) {
-                currentIndex = parseInt(currentImage.getAttribute('data-index'));
-                currentImage.classList.remove('active');
-            } else {
-                // Fallback: This handles the edge case where the active class is somehow missing
-                currentIndex = 0;
-                images[0].classList.remove('active');
-            }
-
-            // Calculate the new index with wrap-around logic
-            let newIndex = currentIndex + n;
-            if (newIndex >= images.length) {
-                newIndex = 0;
-            }
-            if (newIndex < 0) {
-                newIndex = images.length - 1;
-            }
-
-            // Show the next image
-            let nextImage = images[newIndex];
-            nextImage.classList.add('active');
-        }
-
-        // Initial setup: ensures only the first image is visible when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.image-gallery').forEach(gallery => {
-                const images = gallery.querySelectorAll('.gallery-image');
-                if (images.length > 0) {
-                    // This logic ensures only the first image is active/visible on load.
-                    images.forEach((img, index) => {
-                        if (index !== 0) {
-                            img.classList.remove('active');
-                        } else {
-                            // Only force the first one to be active if it's not already
-                            if (!img.classList.contains('active')) {
-                                img.classList.add('active');
-                            }
-                        }
-                    });
-                }
-            });
         });
     </script>
 </body>

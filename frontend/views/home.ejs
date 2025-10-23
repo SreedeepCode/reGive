@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Homepage | reGive</title>
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/searchstyle.css" /> <!-- CRITICAL: Include searchstyle.css for card styling -->
     <script src="js/script.js" defer></script>
 </head>
 
@@ -16,43 +17,89 @@
         <span>Donate to those who Need</span>
         <button id="donate-btn">Donate</button>
     </section>
-    </section>
+
     <section id="leaderboard" class="leaderboard-section">
         <h2>Top Donors</h2>
         <ul id="leaderboardList"></ul>
     </section>
 
-    <section id="small-catalog">
-        <span>Frequently Donated Items</span>
-        <div id="listings">
-            <ul id="list">
-                <% // Check if items were passed from the backend, defaulting to empty array const
-                    displayItems=typeof frequentItems !=='undefined' ? frequentItems : []; %>
+    <!-- FREQUENTLY DONATED ITEMS SECTION -->
+    <section id="small-catalog" class="results-page">
+        <h2>Recently Donated Items</h2>
+        
+        <% 
+            const displayItems = typeof frequentItems !== 'undefined' ? frequentItems : [];
+        %>
+        
+        <% if (displayItems.length === 0) { %>
+            <p class="no-results-message">No recently donated items found yet. Please check back later!</p>
+        <% } else { %>
 
-                <% displayItems.forEach(item=> { %>
-                    <a href="/api/search?q=<%= item.name %>" class="item">
-                        <img src="<%= item.imageURL && item.imageURL.length > 0 ? item.imageURL[0] : '/img/stock-item.jpg' %>"
-                            alt="<%= item.name %> image"
-                            onerror="this.onerror=null; this.src='/img/stock-item.jpg';" />
+        <!-- REPLACED <div id="listings"> with <div class="item-card-grid"> -->
+        <div class="item-card-grid"> 
+            <% displayItems.forEach(item => { %>
+            
+            <!-- Individual Item Card -->
+            <div class="item-card">
+                
+                <!-- TOP: Name and Category -->
+                <div class="card-content-top">
+                    <p class="item-name" onclick="window.location.href='/item/<%= item._id %>'">
+                        <%= item.name %>
+                    </p>
+                    <% if (item.categoryId && item.categoryId.name) { %>
+                        <p class="item-category">
+                            <%= item.categoryId.name %>
+                        </p>
+                    <% } %>
+                </div>
 
-                        <span class="item-name">
-                            <%= item.name %>
-                        </span>
-                        <span class="item-desc">
-                            <%= item.description %>
-                        </span>
-                    </a>
-                <% }); %>
+                <!-- MIDDLE: Image Container (Clickable to detail page) -->
+                <div class="card-image-container" onclick="window.location.href='/item/<%= item._id %>'">
+                    <% 
+                        const imageUrls = item.imageURL && item.imageURL.length > 0 ? item.imageURL : ['/img/stock-item.jpg'];
+                        const firstImage = imageUrls[0];
+                        const imageSrc = firstImage.startsWith('http') || firstImage.startsWith('/') ? firstImage : '/uploads/' + firstImage;
+                    %>
+                    <img src="<%= imageSrc %>" 
+                         alt="<%= item.name %> image" 
+                         class="card-image" 
+                         onerror="this.onerror=null; this.src='/img/stock-item.jpg';" >
+                </div>
 
-                <% if (displayItems.length === 0) { %>
-                    <p>No frequently donated items found yet. Please check back later!</p>
-                <% } %>
-            </ul>
+                <!-- BOTTOM: Description -->
+                <div class="card-content-bottom">
+                    <p class="item-description" onclick="window.location.href='/item/<%= item._id %>'">
+                        <%= item.description.substring(0, 100) + (item.description.length > 100 ? '...' : '') %>
+                    </p>
+                </div>
+
+                <!-- Action Bar (Price/Button) -->
+                <div class="card-actions">
+                    <% if (item.price > 0) { %>
+                        <div class="item-price buy-price">
+                            $<%= item.price.toFixed(2) %>
+                        </div>
+                        <button class="action-button buy-button" onclick="window.location.href='/item/<%= item._id %>?action=buy'">
+                            Buy
+                        </button>
+                    <% } else { %>
+                        <div class="item-price item-free">
+                            FREE
+                        </div>
+                        <button class="action-button claim-button" onclick="window.location.href='/item/<%= item._id %>?action=claim'">
+                            Claim
+                        </button>
+                    <% } %>
+                </div>
+            </div>
+            <% }); %>
         </div>
+        <% } %>
     </section>
 
-    <%- include('partials/footer') %>
 
+    <%- include('partials/footer') %>
 </body>
 
 </html>
