@@ -1,163 +1,404 @@
-/* ================================================= */
-/* 1. OVERRIDES FOR THE SEARCH RESULTS PAGE LAYOUT */
-/* ================================================= */
+/* =================================================
+1. OVERRIDES FOR THE SEARCH RESULTS PAGE LAYOUT
+================================================= 
+*/
 
-/* Override the full-screen background image set in style.css for the results page */
-
-
-
-
-.search-nav-wrapper {
-    /* Get rid of the global body background for the whole page */
-      display: flex;
-  align-items: center;
-  top: 0;
-  left: 0;
-  width: 100%;
-  justify-content: space-between;
-   min-height: 105px !important;
-  padding: 1rem 2rem;
-  position: fixed;
-  z-index: 1000;
-  background-color: rgba(0, 128, 128, 0.85);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);                                            
-      /* Optional: Adjust if you need to pull content up */
+/* Define the primary theme color for easy reference */
+:root {
+    --primary-teal: #00796b;
+    --light-teal: #e0f7fa;
+    --background-color: #f0f7f7;
+    --claim-green: #4CAF50; /* New color for "Claim" */
+    --buy-button-color: #f2994a; /* Using a distinct color for the buy button/price, like gold/orange */
 }
 
-
-
-
-#Back-Button {
-    /* Base styles */
-    display: inline-block !important; 
-    padding: 8px 15px !important;
-    background-color: #f9f9f9 !important; /* Light background */
-    color: teal !important; 
-    font-weight: bold !important;
-    font-size: 16px !important;
-    border: 2px solid teal !important;
-    border-radius: 8px !important;
-    cursor: pointer; 
-    
-    /* Resetting conflicting styles */
-    font-family: inherit !important;
-    margin: 0 !important; 
-    transition: background-color 0.2s, box-shadow 0.2s;
-}
-
-#Back-Button:hover {
-    background-color: teal !important;
-    color: white !important;
-    box-shadow: 0 4px 8px rgba(0, 128, 128, 0.4) !important;
-}
-
-/* --- 3. FIX BODY PADDING (Since we removed the nav override) --- */
-
-/* The main content needs padding below the new 80px tall wrapper */
-.results-page {
-    /* Ensure there's enough space under the new fixed/tall top bar */
-    padding-top: 100px !important; 
-    /* ... rest of your results-page styles ... */
-}
-* after button */
-.results-page {
-    /* Critical: Set a solid background and padding to clear the fixed navbar */
-    background-color: white !important; 
-    padding-top: 100px; 
-    padding-bottom: 50px;
-    padding-left: 20px;
-    padding-right: 20px;
-    min-height: calc(100vh - 50px); 
-    width: 100%;
-    margin: 0 auto;
-}
-
-/* Ensure the body is no longer covered by the full-screen image for this page */
+/* Ensure the body background is clean for this page */
 body {
     background-image: none !important;
     background-size: auto !important;
     background-attachment: scroll !important;
-    background-color: #f0f7f7 !important; /* Use a light color theme */
+    background-color: var(--background-color) !important; /* Light background */
 }
 
-/* Style the unordered list that holds all search results */
-.results-page ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-/* Style each individual search result item container */
-.results-page li {
+/* The fixed navigation wrapper at the top (Used on Search/Detail pages without separate back button) */
+.search-nav-wrapper {
     display: flex;
-    gap: 25px; 
-    align-items: flex-start;
-    padding: 20px;
-    margin-bottom: 10px;
-    background-color: #ffffff; /* White background for the item box */
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 128, 128, 0.15); /* Soft shadow with teal hint */
-    border: 1px solid #e0f7fa; /* Light border */
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    justify-content: flex-start; /* Align button to the left */
+    min-height: 105px !important;
+    padding: 1rem 2rem;
+    position: fixed;
+    z-index: 1000;
+    background-color: rgba(0, 121, 107, 0.9); /* Opaque primary teal */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.results-page li p strong {
-    /* Style for the strong text within the results */
-    min-width: 100px;
-    display: inline-block;
-    color: teal;
+/* Back Button Styling */
+#Back-Button {
+    display: inline-block !important; 
+    padding: 8px 15px !important;
+    background-color: #f9f9f9 !important;
+    color: var(--primary-teal) !important; 
+    font-weight: bold !important;
+    font-size: 16px !important;
+    border: 2px solid var(--primary-teal) !important;
+    border-radius: 8px !important;
+    cursor: pointer; 
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
-/* ================================================= */
-/* 2. IMAGE GALLERY (CAROUSEL) STYLES */
-/* ================================================= */
+#Back-Button:hover {
+    background-color: var(--primary-teal) !important;
+    color: white !important;
+    box-shadow: 0 4px 8px rgba(0, 128, 128, 0.4) !important;
+}
 
-.image-gallery {
-    position: relative;
-    width: 150px; 
-    height: 150px;
-    flex-shrink: 0;
-    overflow: hidden;
+/* Main Content Area for search/home item grids */
+.results-page {
+    /* Padding to clear the fixed top bar */
+    padding-top: 130px; 
+    padding-bottom: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 100vh; 
+}
+
+.results-page h2 {
+    text-align: center;
+    color: var(--primary-teal);
+    margin-bottom: 30px;
+    font-size: 2.2em;
+    font-weight: 700;
+}
+
+.no-results-message {
+    text-align: center;
+    font-size: 1.2em;
+    color: #555;
+    padding: 40px;
+    border: 1px solid var(--light-teal);
+    background-color: #fff;
     border-radius: 8px;
-    border: 2px solid teal;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.gallery-image {
+
+/* =================================================
+2. ITEM CARD GRID STYLES (Used on Search & Home)
+================================================= 
+*/
+
+.item-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px; 
+    padding: 20px 0;
+}
+
+.item-card {
+    background-color: #ffffff;
+    border: 3px solid var(--primary-teal); 
+    border-radius: 12px;
+    overflow: hidden; 
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 121, 107, 0.3); 
+}
+
+/* Card Content Sections */
+.card-content-top {
+    padding: 15px 15px 5px 15px; /* Top and side padding */
+}
+
+.card-content-bottom {
+    padding: 5px 15px 15px 15px; /* Bottom and side padding */
+    flex-grow: 1; /* Pushes the action bar to the bottom */
+}
+
+.card-image-container {
+    width: 100%;
+    height: 200px; 
+    overflow: hidden;
+    border-top: 1px solid #eee; /* Added border to separate from top content */
+    border-bottom: 1px solid #eee; 
+    cursor: pointer; 
+}
+
+.card-image {
     width: 100%;
     height: 100%;
     object-fit: cover; 
-    display: none; /* Controlled by JS */
-}
-.gallery-image.active {
-    display: block !important;
+    transition: transform 0.3s;
 }
 
-/* Style for the navigation buttons (Arrows) */
-.prev-button, .next-button {
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    padding: 5px 8px; 
-    color: white;
+.item-card:hover .card-image {
+    transform: scale(1.05); 
+}
+
+.item-name {
+    font-size: 1.2em;
     font-weight: bold;
-    font-size: 16px;
+    color: var(--primary-teal); 
+    margin-bottom: 5px;
+    cursor: pointer; 
+}
+
+.item-category {
+    font-size: 0.9em;
+    color: #777;
+    margin-bottom: 0; 
+}
+
+.item-description {
+    color: #555;
+    font-size: 0.9em;
+    margin-bottom: 0; 
+    cursor: pointer; 
+}
+
+/* =================================================
+3. CARD ACTION BAR (Price and Button Row)
+================================================= 
+*/
+
+.card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    border-top: 1px solid #eee;
+    background-color: #fdfdfd; 
+    border-radius: 0 0 9px 9px;
+}
+
+.item-price {
+    font-size: 1.4em;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.item-price.buy-price {
+    color: var(--buy-button-color); 
+}
+
+.item-price.item-free {
+    color: var(--claim-green);
+    font-size: 1.1em;
+    text-transform: uppercase;
+}
+
+/* Action Button Styles */
+.action-button {
+    padding: 10px 20px; 
     border: none;
-    background-color: rgba(0,0,0,0.6);
-    z-index: 10;
-    border-radius: 4px;
-    opacity: 0.9;
-    transition: opacity 0.2s ease;
+    font-size: 1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    border-radius: 6px; 
+    text-transform: uppercase;
+    flex-shrink: 0; 
 }
 
-.next-button {
-    right: 5px;
-}
-.prev-button {
-    left: 5px;
+.buy-button {
+    background-color: var(--buy-button-color);
+    color: white;
 }
 
-.prev-button:hover, .next-button:hover {
-    opacity: 1;
-    background-color: rgba(0, 128, 128, 0.8); /* Teal hover */
+.buy-button:hover {
+    background-color: #e57e28; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.claim-button {
+    background-color: var(--claim-green);
+    color: white;
+}
+
+.claim-button:hover {
+    background-color: #388e3c; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* =================================================
+5. ITEM DETAIL PAGE STYLES (NEW)
+================================================= 
+*/
+.item-detail-page {
+    /* Clear fixed header */
+    padding-top: 130px; 
+    padding-bottom: 50px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.detail-container {
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+.item-detail-name {
+    color: var(--primary-teal);
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    border-bottom: 3px solid var(--light-teal);
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+.detail-content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+}
+
+/* Layout for tablets and desktops */
+@media (min-width: 768px) {
+    .detail-content-grid {
+        grid-template-columns: 2fr 1.5fr; /* Image wider than details block */
+        gap: 30px;
+    }
+}
+
+/* Image Styles */
+.detail-image-gallery {
+    /* Center images in the grid column */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.detail-image-gallery .main-image {
+    width: 100%;
+    height: auto;
+    max-height: 450px;
+    object-fit: contain; /* show full image without cropping */
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+}
+
+.detail-image-gallery .thumbnail-strip {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto; /* Enable horizontal scrolling for many thumbnails */
+    padding-bottom: 10px;
+}
+
+.detail-image-gallery .thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.detail-image-gallery .thumbnail:hover {
+    border-color: var(--primary-teal);
+}
+
+/* Info Block Styles */
+.detail-info-block h2 {
+    color: var(--primary-teal);
+    font-size: 1.4em;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--light-teal);
+    padding-bottom: 5px;
+}
+
+.detail-section p {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.detail-section strong {
+    font-weight: 700;
+    color: #333;
+}
+
+.detail-description {
+    font-size: 1.1em;
+}
+
+.detail-price-buy {
+    font-size: 1.3em;
+    color: var(--buy-button-color);
+    font-weight: bold;
+}
+
+.detail-price-free {
+    font-size: 1.3em;
+    color: var(--claim-green);
+    font-weight: bold;
+}
+
+/* Contact Box */
+.contact-info-box {
+    padding: 15px;
+    border: 2px solid var(--primary-teal);
+    border-radius: 8px;
+    background-color: var(--light-teal);
+    margin-top: 20px;
+}
+
+.contact-info-box h2 {
+    /* Override h2 border from info block */
+    border-bottom: 1px solid var(--primary-teal);
+    padding-bottom: 5px;
+    margin-top: 0;
+}
+
+.contact-link {
+    display: block;
+    margin-top: 10px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.email-link {
+    background-color: var(--primary-teal);
+    color: white;
+}
+
+.email-link:hover {
+    background-color: #005a4e;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.phone-link {
+    background-color: #333;
+    color: white;
+}
+
+.phone-link:hover {
+    background-color: #000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.contact-note {
+    font-size: 0.9em;
+    margin-top: 10px;
+    color: #555;
+    font-style: italic;
+    border-top: 1px dashed #a0a0a0;
+    padding-top: 5px;
 }

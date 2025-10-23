@@ -12,7 +12,8 @@ export const getHomePage = async (req, res) => {
       .limit(5)
       .populate("donorId", "displayName email")
       .populate("categoryId", "name")
-      .select("name description imageURL donorId categoryId createdAt")
+      // ** ADDED price and pickup here **
+      .select("name description imageURL donorId categoryId createdAt price pickup") 
       .exec();
 
     console.log(`[HOMEPAGE DEBUG] Items Found: ${frequentItems.length}`);

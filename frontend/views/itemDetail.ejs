@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= item.name %> | reGive</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/searchstyle.css" /> <!-- Reusing theme styles -->
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="item-detail-page">
+        <div class="detail-container">
+            <h1 class="item-detail-name"><%= item.name %></h1>
+
+            <div class="detail-content-grid">
+                <!-- Image Gallery -->
+                <div class="detail-image-gallery">
+                    <% 
+                        const imageUrls = item.imageURL && item.imageURL.length > 0 ? item.imageURL : ['/img/stock-item.jpg'];
+                    %>
+                    <img src="<%= imageUrls[0] %>" alt="<%= item.name %> primary image" class="main-image">
+                    
+                    <% if (imageUrls.length > 1) { %>
+                        <div class="thumbnail-strip">
+                            <!-- Display thumbnails for additional images -->
+                            <% imageUrls.slice(1).forEach(url => { %>
+                                <img src="<%= url %>" alt="Thumbnail" class="thumbnail">
+                            <% }); %>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Details and Contact Info -->
+                <div class="detail-info-block">
+                    <div class="detail-section">
+                        <h2>Description</h2>
+                        <p class="detail-description"><%= item.description %></p>
+                    </div>
+
+                    <div class="detail-section detail-meta">
+                        <h2>Item Details</h2>
+                        <!-- FIX: Added safe access check (item.categoryId ?) to prevent TypeError -->
+                        <p><strong>Category:</strong> <%= item.categoryId ? item.categoryId.name : 'N/A' %></p>
+                        <!-- Added subCategory field check -->
+                        <% if (item.subCategoryName) { %>
+                            <p><strong>Sub Category:</strong> <%= item.subCategoryName %></p>
+                        <% } %>
+                        <!-- FIX: Added safe access check (item.donorId ?) for donor name -->
+                        <p><strong>Donor:</strong> <%= item.donorId ? item.donorId.displayName : 'Anonymous' %></p>
+                        <p><strong>Pickup Location:</strong> <%= item.pickup %></p>
+
+                        <% if (item.price && item.price > 0) { %>
+                            <p class="detail-price-buy"><strong>Price:</strong> $<%= item.price.toFixed(2) %></p>
+                        <% } else { %>
+                            <p class="detail-price-free"><strong>Price:</strong> FREE</p>
+                        <% } %>
+                    </div>
+
+                    <div class="detail-section contact-info-box">
+                        <h2>Contact Donor</h2>
+                        <% if (contactInfo) { %>
+                            <p>
+                                The donor prefers contact via <strong><%= contactInfo.type %></strong>.
+                            </p>
+                            <% if (contactInfo.type === 'Phone') { %>
+                                <a href="tel:<%= contactInfo.value %>" class="contact-link phone-link"><%= contactInfo.value %></a>
+                            <% } else { %>
+                                <!-- FIX: Used the safe access check here as well -->
+                                <a href="mailto:<%= contactInfo.value %>" class="contact-link email-link">Send Email to <%= contactInfo.donorEmail %></a>
+                            <% } %>
+                            <% if (contactInfo.note) { %>
+                                <p class="contact-note"><%= contactInfo.note %></p>
+                            <% } %>
+                        <% } else { %>
+                            <p>Contact information could not be determined. Please try again later.</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+
+</html>

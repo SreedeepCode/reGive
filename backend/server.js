@@ -15,6 +15,7 @@ import homeRoutes from "./routes/homeRoutes.js";
 import leaderboardRoutes from "./routes/leaderboardroutes.js";
 import userRoutes from "./routes/userRoutes.js";
 
+import itemDetailRoute from "./routes/itemDetailRoute.js";
 dotenv.config();
 
 const app = express();
@@ -233,6 +234,7 @@ app.post("/initial-login", async (req, res) => {
 // API Routes
 app.use("/api/admin", adminRoutes);
 app.use("/api", donationRoutes);
+app.use("/", itemDetailRoute);
 app.use("/api", itemRoutes);
 app.use("/api/user", userRoutes);
 app.use("/", homeRoutes);
