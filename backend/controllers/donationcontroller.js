@@ -4,15 +4,9 @@ import User from "../models/users.js";
 
 export const donateItem = async (req, res) => {
   try {
-    console.log("req.body:", req.body);
-    console.log("req.files:", req.files);
-
-    if (!req.user) {
-      return res.status(401).json({
-        error: "Unauthorized",
-        message: "User not authenticated",
-      });
-    }
+    console.log(" DONATE API HIT!");
+    console.log(" Body:", req.body);
+    console.log(" Files:", req.files?.length || 0);
 
     const {
       itemTitle,
@@ -25,138 +19,84 @@ export const donateItem = async (req, res) => {
       urgentDonation,
       isPaid,
       price,
-      contactMethods,
+      userId,
+      "contactMethods[]": contactMethods,
     } = req.body;
 
-    await User.findByIdAndUpdate(req.user._id, {
-      $inc: { points: 10 },
-    });
-
-    if (!itemTitle || !itemTitle.trim()) {
-      return res.status(400).json({
-        error: "Validation Error",
-        message: "Item title is required",
-      });
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
     }
 
-    if (!category || !category.trim()) {
-      return res.status(400).json({
-        error: "Validation Error",
-        message: "Category is required",
-      });
+    if (
+      !itemTitle?.trim() ||
+      !category?.trim() ||
+      !location?.trim() ||
+      !condition
+    ) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    if (!location || !location.trim()) {
-      return res.status(400).json({
-        error: "Validation Error",
-        message: "Location is required",
-      });
-    }
-
-    const categoryDoc = await Category.findOne({
-      name: category.trim().replace(/\r?\n/g, " "),
-    });
-
-    if (!categoryDoc) {
-      return res.status(400).json({
-        error: "Invalid Category",
-        message: "The selected category does not exist",
-      });
-    }
+    const categoryDoc = await Category.findOne({ name: category.trim() });
+    if (!categoryDoc)
+      return res.status(400).json({ error: "Invalid category" });
 
     let finalPrice = 0;
-    if (isPaid === "yes" || isPaid === true) {
+    if (isPaid === "yes") {
       finalPrice = parseFloat(price);
-      if (isNaN(finalPrice) || finalPrice < 0) {
-        return res.status(400).json({
-          error: "Validation Error",
-          message: "Please provide a valid price",
-        });
+      if (isNaN(finalPrice) || finalPrice <= 0) {
+        return res.status(400).json({ error: "Valid price required" });
       }
     }
 
-    let contactMethodsArray = [];
-    if (contactMethods) {
-      if (Array.isArray(contactMethods)) {
-        contactMethodsArray = contactMethods;
-      } else {
-        contactMethodsArray = [contactMethods];
-      }
-    }
+    const contactMethodsArray = Array.isArray(contactMethods)
+      ? contactMethods
+      : contactMethods
+      ? [contactMethods]
+      : ["email"];
 
     let finalDate = null;
+
     if (availableUntil) {
       finalDate = new Date(availableUntil);
+
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      if (isNaN(finalDate.getTime())) {
-        return res.status(400).json({
-          error: "Validation Error",
-          message: "Invalid date format for availableUntil",
-        });
-      }
-
       if (finalDate < today) {
-        return res.status(400).json({
-          error: "Validation Error",
-          message: "Available until date cannot be in the past",
-        });
+        return res
+          .status(400)
+          .json({ error: "Available until date cannot be in the past" });
       }
     }
-
-    const imageURLs =
-      req.files && req.files.length > 0
-        ? req.files.map((f) => `/uploads/${f.filename}`)
-        : [];
 
     const newItem = await Item.create({
       name: itemTitle.trim(),
-      description: description ? description.trim() : "",
+      description: description?.trim() || "",
       pickup: location.trim(),
       condition: condition.trim(),
-      donorId: req.user._id,
-      isPaid: isPaid === "yes" || isPaid === true,
+      donorId: userId,
+      isPaid: isPaid === "yes",
       price: finalPrice,
-      urgent:
-        urgentDonation === "on" ||
-        urgentDonation === "true" ||
-        urgentDonation === true,
-      available_until: finalDate || null,
+      urgent: urgentDonation === "on",
+      available_until: finalDate,
       categoryId: categoryDoc._id,
-      subcategory: subcategory ? subcategory.trim() : "",
+      subcategory: subcategory?.trim() || "",
       preferences: contactMethodsArray,
-      imageURL: imageURLs,
+      imageURL: req.files?.map((f) => `/uploads/${f.filename}`) || [],
     });
 
-    console.log("Item created successfully:", newItem);
+    console.log(" Item created:", newItem._id);
 
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
-      message: "Donation created successfully",
-      item: newItem,
+      message: "Donation created successfully!",
+      itemId: newItem._id,
     });
   } catch (err) {
-    console.error("Donation error:", err);
-
-    if (err.name === "ValidationError") {
-      const messages = Object.values(err.errors).map((e) => e.message);
-      return res.status(400).json({
-        error: "Validation Error",
-        message: messages.join(", "),
-      });
-    }
-
-    if (err.code === 11000) {
-      return res.status(400).json({
-        error: "Duplicate Error",
-        message: "This item already exists",
-      });
-    }
-
-    return res.status(500).json({
+    console.error(" ERROR:", err);
+    res.status(500).json({
       error: "Server Error",
-      message: "Failed to save donation. Please try again later.",
+      message: "Failed to create donation",
     });
   }
 };
