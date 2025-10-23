@@ -1,6 +1,7 @@
 import Category from "../models/categories.js";
 import Item from "../models/items.js";
 import User from "../models/users.js";
+import { supabase } from "../config/db.js";
 
 export const donateItem = async (req, res) => {
   try {
@@ -55,17 +56,50 @@ export const donateItem = async (req, res) => {
       : ["email"];
 
     let finalDate = null;
-
     if (availableUntil) {
       finalDate = new Date(availableUntil);
-
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-
       if (finalDate < today) {
         return res
           .status(400)
           .json({ error: "Available until date cannot be in the past" });
+      }
+    }
+
+    const imageURLs = [];
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        try {
+          const timestamp = Date.now();
+          const random = Math.round(Math.random() * 1e9);
+          const fileName = `${timestamp}-${random}-${file.originalname}`;
+          const filePath = `Products/${userId}/${fileName}`;
+
+          const { data, error } = await supabase.storage
+            .from("Products")
+            .upload(filePath, file.buffer, {
+              contentType: file.mimetype,
+              upsert: false,
+            });
+
+          if (error) {
+            console.error(` Error uploading file ${file.originalname}:`, error);
+            throw error;
+          }
+
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from("Products").getPublicUrl(filePath);
+
+          imageURLs.push(publicUrl);
+          console.log(` File uploaded: ${filePath}`);
+        } catch (uploadError) {
+          console.error(
+            ` Upload failed for file ${file.originalname}:`,
+            uploadError
+          );
+        }
       }
     }
 
@@ -82,16 +116,10 @@ export const donateItem = async (req, res) => {
       categoryId: categoryDoc._id,
       subcategory: subcategory?.trim() || "",
       preferences: contactMethodsArray,
-      imageURL: req.files?.map((f) => `/uploads/${f.filename}`) || [],
+      imageURL: imageURLs,
     });
 
     console.log(" Item created:", newItem._id);
-
-    res.status(201).json({
-      success: true,
-      message: "Donation created successfully!",
-      itemId: newItem._id,
-    });
 
     const user = await User.findById(userId);
     if (user) {
@@ -104,7 +132,7 @@ export const donateItem = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Donation created successfully! You earned 10 points ",
+      message: "Donation created successfully! You earned 10 points",
       itemId: newItem._id,
       newPoints: user?.points || 0,
     });
