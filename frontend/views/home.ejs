@@ -98,8 +98,24 @@
         <% } %>
     </section>
 
+                        <span class="item-name">
+                            <%= item.name %>
+                        </span>
+                        <span class="item-desc">
+                            <%= item.description %>
+                        </span>
+                    </a>
+                <% }); %>
+
+                <% if (displayItems.length === 0) { %>
+                    <p>No frequently donated items found yet. Please check back later!</p>
+                <% } %>
+            </ul>
+        </div>
+    </section>
 
     <%- include('partials/footer') %>
+
 </body>
 
 </html>

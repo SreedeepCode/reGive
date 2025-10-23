@@ -7,251 +7,27 @@
     <link rel="stylesheet" href="css/style.css" />
     <script src="script.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        let currentUser = null;
+        //Edit Profile Function.
+        document.addEventListener("DOMContentLoaded", function () {
+            const editBtn = document.getElementById("edit-profile-btn");
+            const profileInfo = document.getElementById("profile-info");
+            const editForm = document.getElementById("edit-profile-form");
 
-        // Fetch user profile data on page load
-        fetchUserProfile();
+            editBtn.addEventListener("click", function () {
+                profileInfo.style.display = "none";
+                editForm.style.display = "block";
+            });
 
-        // Edit Profile functionality
-        const editBtn = document.getElementById("edit-profile-btn");
-        const profileInfo = document.getElementById("profile-info");
-        const editForm = document.getElementById("edit-profile-form");
 
-        editBtn.addEventListener("click", function () {
-          // Populate edit form with current data
-          if (currentUser) {
-            document.getElementById("edit-name").value = currentUser.name;
-            document.getElementById("edit-email").value = currentUser.email;
-            document.getElementById("edit-phone").value = currentUser.phone;
-            //document.getElementById("edit-location").value =
-            //currentUser.location;
-          }
 
-          profileInfo.style.display = "none";
-          editForm.style.display = "block";
+            document
+                .getElementById("cancel-profile-btn")
+                .addEventListener("click", function (e) {
+                    e.preventDefault();
+                    editForm.style.display = "none";
+                    profileInfo.style.display = "block";
+                });
         });
-
-        document
-          .getElementById("save-profile-btn")
-          .addEventListener("click", function (e) {
-            e.preventDefault();
-
-            const updatedData = {
-              name: document.getElementById("edit-name").value,
-              email: document.getElementById("edit-email").value,
-              phone: document.getElementById("edit-phone").value,
-              //location: document.getElementById("edit-location").value,
-            };
-
-            updateUserProfile(updatedData);
-          });
-
-        document
-          .getElementById("cancel-profile-btn")
-          .addEventListener("click", function (e) {
-            e.preventDefault();
-            editForm.style.display = "none";
-            profileInfo.style.display = "block";
-          });
-
-        // Fetch user profile from API
-        function fetchUserProfile() {
-          fetch("/api/user/profile")
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Failed to fetch profile");
-              }
-              return response.json();
-            })
-            .then((data) => {
-              currentUser = data.user;
-              updateProfileDisplay(currentUser);
-              fetchUserStats(currentUser._id);
-              fetchActiveListings(currentUser._id);
-              fetchDonationHistory(currentUser._id);
-            })
-            .catch((error) => {
-              console.error("Error fetching profile:", error);
-              alert("Failed to load profile data");
-            });
-        }
-
-        // Update profile display
-        function updateProfileDisplay(user) {
-          document.getElementById("profile-name").textContent = user.name;
-          document.getElementById("profile-email").textContent = user.email;
-          document.getElementById("profile-phone").textContent =
-            user.phone || "Not provided";
-          //document.getElementById("profile-location").textContent =
-          //user.location || "Not provided";
-          document.getElementById("profile-joined").textContent = new Date(
-            user.createdAt
-          ).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-          });
-        }
-
-        // Update user profile via API
-        function updateUserProfile(updatedData) {
-          fetch("/api/user/profile", {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(updatedData),
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Failed to update profile");
-              }
-              return response.json();
-            })
-            .then((data) => {
-              currentUser = { ...currentUser, ...updatedData };
-              updateProfileDisplay(currentUser);
-              editForm.style.display = "none";
-              profileInfo.style.display = "block";
-              alert("Profile updated successfully!");
-            })
-            .catch((error) => {
-              console.error("Error updating profile:", error);
-              alert("Failed to update profile");
-            });
-        }
-
-        // Fetch user statistics
-        function fetchUserStats(userId) {
-          fetch(`/api/user/${userId}/stats`)
-            .then((response) => response.json())
-            .then((data) => {
-              document.getElementById("total-points").textContent =
-                data.totalPoints || 0;
-              document.getElementById("items-donated").textContent =
-                data.itemsDonated || 0;
-            })
-            .catch((error) => {
-              console.error("Error fetching stats:", error);
-            });
-        }
-
-        // Fetch active listings
-        function fetchActiveListings(userId) {
-          fetch(`/api/user/${userId}/listings`)
-            .then((response) => response.json())
-            .then((listings) => {
-              const listingsContainer =
-                document.getElementById("active-listings");
-              listingsContainer.innerHTML = "";
-
-              if (listings.length === 0) {
-                listingsContainer.innerHTML =
-                  "<p>No active listings found.</p>";
-                return;
-              }
-
-              listings.forEach((listing) => {
-                const listingDiv = document.createElement("div");
-                listingDiv.className = "listing-item";
-                listingDiv.innerHTML = `
-                                <img src="${
-                                  listing.imageUrl || "img/stock-item.jpg"
-                                }" alt="Item Image" />
-                                <div>
-                                    <div><strong>Name:</strong> ${
-                                      listing.name
-                                    }</div>
-                                    <div><strong>Condition:</strong> ${
-                                      listing.condition
-                                    }</div>
-                                    <button onclick="editListing('${
-                                      listing._id
-                                    }')">Edit</button>
-                                    <button onclick="removeListing('${
-                                      listing._id
-                                    }')">Remove</button>
-                                </div>
-                            `;
-                listingsContainer.appendChild(listingDiv);
-              });
-            })
-            .catch((error) => {
-              console.error("Error fetching listings:", error);
-            });
-        }
-
-        // Fetch donation history
-        function fetchDonationHistory(userId) {
-          fetch(`/api/user/${userId}/donations`)
-            .then((response) => response.json())
-            .then((donations) => {
-              const tbody = document.getElementById("donation-history-body");
-              tbody.innerHTML = "";
-
-              if (donations.length === 0) {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `<td colspan="4" style="text-align: center;">No donation history found.</td>`;
-                tbody.appendChild(tr);
-                return;
-              }
-
-              donations.forEach((donation) => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                                <td>${donation.itemName}</td>
-                                <td>${donation.categoryName}</td>
-                                <td>${new Date(
-                                  donation.donatedAt
-                                ).toLocaleDateString()}</td>
-                                <td>${donation.pointsEarned}</td>
-                            `;
-                tbody.appendChild(tr);
-              });
-            })
-            .catch((error) => {
-              console.error("Error fetching donation history:", error);
-            });
-        }
-
-        // Global functions for listing actions
-        window.editListing = function (listingId) {
-          // Implement edit listing functionality
-          console.log("Edit listing:", listingId);
-          // You can redirect to edit page or open a modal
-          window.location.href = `/edit-listing/${listingId}`;
-        };
-
-        window.removeListing = function (listingId) {
-          if (confirm("Are you sure you want to remove this listing?")) {
-            fetch(`/api/listings/${listingId}`, {
-              method: "DELETE",
-            })
-              .then((response) => {
-                if (!response.ok) {
-                  throw new Error("Failed to remove listing");
-                }
-                return response.json();
-              })
-              .then(() => {
-                alert("Listing removed successfully!");
-                fetchActiveListings(currentUser._id);
-              })
-              .catch((error) => {
-                console.error("Error removing listing:", error);
-                alert("Failed to remove listing");
-              });
-          }
-        };
-
-        // Change password functionality
-        document
-          .getElementById("change-password-btn")
-          .addEventListener("click", function () {
-            // You can implement this as a modal or redirect to a separate page
-            window.location.href = "/change-password";
-          });
-      });
     </script>
   </head>
 
@@ -259,101 +35,116 @@
     <%- include('partials/navbar') %>
 
     <div class="container" id="userprof">
-      <section class="profile-section">
-        <h2>User Profile</h2>
-        <div class="profile-basic">
-          <img src="img/avatar.jpg" alt="Profile Picture" class="avatar" />
-          <div>
-            <div id="profile-info">
-              <div>
-                <strong>Name:</strong> <span id="profile-name">Loading...</span>
-              </div>
-              <div>
-                <strong>Email:</strong>
-                <span id="profile-email">Loading...</span>
-              </div>
-              <div>
-                <strong>Phone:</strong>
-                <span id="profile-phone">Loading...</span>
-              </div>
-              <!-- <div>
-                <strong>Location:</strong>
-                <span id="profile-location">Loading...</span>
-              </div> -->
-              <div>
-                <strong>Joined Date:</strong>
-                <span id="profile-joined">Loading...</span>
-              </div>
-              <button id="edit-profile-btn">Edit Profile</button>
-              <button id="change-password-btn">Change Password</button>
+        <section class="profile-section">
+            <h2>User Profile</h2>
+            <div class="profile-basic">
+                <img src="img/avatar.jpg" alt="Profile Picture" class="avatar" />
+                <div>
+                    <div id="profile-info">
+                        <div>
+                            <strong>Name:</strong> <span id="profile-name"><%= user.displayName %></span>
+                        </div>
+                        <div>
+                            <strong>Email:</strong>
+                            <span id="profile-email"><%= user.email %></span>
+                        </div>
+                        <div>
+                            <strong>Phone:</strong>
+                            <span id="profile-phone"><%= user.phone || 'Not provided' %></span>
+                        </div>
+                        <div>
+                            <strong>Location:</strong>
+                            <span id="profile-location"><%= user.address || 'Not provided' %></span>
+                        </div>
+                        <div><strong>Joined Date:</strong> <%= new Date(user.joinedAt).toLocaleDateString() %></div>
+                        <button id="edit-profile-btn">Edit Profile</button>
+                        <button>Change Password</button>
+                    </div>
+
+                    <!-- Edit Form -->
+                    <form id="edit-profile-form" action="/user-profile" method="POST" style="display: none">
+                        <div>
+                            <label>Name: <input type="text" name="displayName" id="edit-name" value="<%= user.displayName %>" /></label>
+                        </div>
+                        <div>
+                            <label>Email:
+                                <input type="email" name="email" id="edit-email" value="<%= user.email %>" readonly /></label>
+                        </div>
+                        <div>
+                            <label>Phone:
+                                <input type="text" name="phone" id="edit-phone" value="<%= user.phone || '' %>" /></label>
+                        </div>
+                        <div>
+                            <label>Location:
+                                <input type="text" name="address" id="edit-location" value="<%= user.address || '' %>" /></label>
+                        </div>
+                        <button type="submit" id="save-profile-btn">Save</button>
+                        <button id="cancel-profile-btn">Cancel</button>
+                    </form>
+                </div>
             </div>
-
-            <!-- Edit Form -->
-            <form id="edit-profile-form" style="display: none">
-              <div>
-                <label
-                  >Name: <input type="text" id="edit-name" required
-                /></label>
-              </div>
-              <div>
-                <label
-                  >Email: <input type="email" id="edit-email" required
-                /></label>
-              </div>
-              <div>
-                <label>Phone: <input type="text" id="edit-phone" /></label>
-              </div>
-              <!-- <div>
-                <label
-                  >Location: <input type="text" id="edit-location"
-                /></label>
-              </div> -->
-              <button type="submit" id="save-profile-btn">Save</button>
-              <button type="button" id="cancel-profile-btn">Cancel</button>
-            </form>
-          </div>
-        </div>
-      </section>
-
-      <section class="profile-section">
-        <h2>Rewards & Stats</h2>
-        <div class="profile-stats">
-          <div>
-            <strong>Total Reward Points:</strong>
-            <span id="total-points">Loading...</span>
-          </div>
-          <div>
-            <strong>Items Donated:</strong>
-            <span id="items-donated">Loading...</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="profile-section">
-        <h2>Active Listings</h2>
-        <div class="listings" id="active-listings">
-          <p>Loading...</p>
-        </div>
-      </section>
-
-      <section class="profile-section">
-        <h2>Donation History</h2>
-        <table class="donation-history">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Category</th>
-              <th>Date Donated</th>
-              <th>Points Earned</th>
-            </tr>
-          </thead>
-          <tbody id="donation-history-body">
-            <tr>
-              <td colspan="4" style="text-align: center">Loading...</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+        </section>
+        <section class="profile-section">
+            <h2>Rewards & Stats</h2>
+            <div class="profile-stats">
+                <div><strong>Total Reward Points:</strong> <%= user.points %></div>
+                <div><strong>Items Donated:</strong> 12</div>
+            </div>
+        </section>
+        <section class="profile-section">
+            <h2>Active Listings</h2>
+            <div class="listings">
+                <div class="listing-item">
+                    <img src="img/stock-item.jpg" alt="Item Image" />
+                    <div>
+                        <div><strong>Name:</strong> Stationary Set</div>
+                        <div><strong>Category:</strong> Stationary</div>
+                        <div><strong>Condition:</strong> New</div>
+                        <div><strong>Date Posted:</strong> 01 Aug 2025</div>
+                        <button>Edit</button>
+                        <button>Remove</button>
+                    </div>
+                </div>
+                <div class="listing-item">
+                    <img src="img/stock-item.jpg" alt="Item Image" />
+                    <div>
+                        <div><strong>Name:</strong> Backpack</div>
+                        <div><strong>Category:</strong> Bags</div>
+                        <div><strong>Condition:</strong> Used</div>
+                        <div><strong>Date Posted:</strong> 15 Jul 2025</div>
+                        <button>Edit</button>
+                        <button>Remove</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="profile-section">
+            <h2>Donation History</h2>
+            <table class="donation-history">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Category</th>
+                        <th>Date Donated</th>
+                        <th>Points Earned</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Stationary Set</td>
+                        <td>Stationary</td>
+                        <td>02 Aug 2025</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>Backpack</td>
+                        <td>Bags</td>
+                        <td>16 Jul 2025</td>
+                        <td>15</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
     </div>
 
     <%- include('partials/footer') %>
