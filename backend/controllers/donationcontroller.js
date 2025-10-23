@@ -82,10 +82,26 @@ if (availableUntil) {
 
     console.log(" Item created:", newItem._id);
 
+
+
     res.status(201).json({
       success: true,
       message: "Donation created successfully!",
       itemId: newItem._id,
+    });
+
+        const user = await User.findById(userId);
+    if (user) {
+      user.points = (user.points || 0) + 10;
+      await user.save();
+      console.log(` Awarded 10 points to user ${user._id}. Total points: ${user.points}`);
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Donation created successfully! You earned 10 points ",
+      itemId: newItem._id,
+      newPoints: user?.points || 0,
     });
 
   } catch (err) {
