@@ -48,7 +48,21 @@ export const donateItem = async (req, res) => {
       ? [contactMethods]
       : ["email"]; 
 
-    const finalDate = availableUntil ? new Date(availableUntil) : null;
+let finalDate = null;
+
+if (availableUntil) {
+  finalDate = new Date(availableUntil);
+
+ 
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (finalDate < today) {
+    return res.status(400).json({ error: "Available until date cannot be in the past" });
+  }
+}
+
 
     const newItem = await Item.create({
       name: itemTitle.trim(),
