@@ -10,7 +10,7 @@ import User from "./models/users.js";
 import adminRoutes from "./routes/adminroutes.js";
 import donationRoutes from "./routes/donationroutes.js";
 import cookieParser from 'cookie-parser';
-import itemRoutes from "./routes/itemroutes.js";
+import itemRoutes from "./routes/itemRoutes.js";
 import homeRoutes from "./routes/homeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authroutes.js";
