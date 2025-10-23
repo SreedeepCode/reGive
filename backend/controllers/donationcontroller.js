@@ -1,6 +1,7 @@
 import Category from "../models/categories.js";
 import Item from "../models/items.js";
 import User from "../models/users.js";
+import { supabase } from "../config/db.js";
 
 export const donateItem = async (req, res) => {
   try {
@@ -19,7 +20,7 @@ export const donateItem = async (req, res) => {
       urgentDonation,
       isPaid,
       price,
-      userId, 
+      userId,
       "contactMethods[]": contactMethods,
     } = req.body;
 
@@ -27,12 +28,18 @@ export const donateItem = async (req, res) => {
       return res.status(400).json({ error: "User ID is required" });
     }
 
-    if (!itemTitle?.trim() || !category?.trim() || !location?.trim() || !condition) {
+    if (
+      !itemTitle?.trim() ||
+      !category?.trim() ||
+      !location?.trim() ||
+      !condition
+    ) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     const categoryDoc = await Category.findOne({ name: category.trim() });
-    if (!categoryDoc) return res.status(400).json({ error: "Invalid category" });
+    if (!categoryDoc)
+      return res.status(400).json({ error: "Invalid category" });
 
     let finalPrice = 0;
     if (isPaid === "yes") {
@@ -46,30 +53,62 @@ export const donateItem = async (req, res) => {
       ? contactMethods
       : contactMethods
       ? [contactMethods]
-      : ["email"]; 
+      : ["email"];
 
-let finalDate = null;
+    let finalDate = null;
+    if (availableUntil) {
+      finalDate = new Date(availableUntil);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (finalDate < today) {
+        return res
+          .status(400)
+          .json({ error: "Available until date cannot be in the past" });
+      }
+    }
 
-if (availableUntil) {
-  finalDate = new Date(availableUntil);
+    const imageURLs = [];
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        try {
+          const timestamp = Date.now();
+          const random = Math.round(Math.random() * 1e9);
+          const fileName = `${timestamp}-${random}-${file.originalname}`;
+          const filePath = `Products/${userId}/${fileName}`;
 
- 
+          const { data, error } = await supabase.storage
+            .from("Products")
+            .upload(filePath, file.buffer, {
+              contentType: file.mimetype,
+              upsert: false,
+            });
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+          if (error) {
+            console.error(` Error uploading file ${file.originalname}:`, error);
+            throw error;
+          }
 
-  if (finalDate < today) {
-    return res.status(400).json({ error: "Available until date cannot be in the past" });
-  }
-}
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from("Products").getPublicUrl(filePath);
 
+          imageURLs.push(publicUrl);
+          console.log(` File uploaded: ${filePath}`);
+        } catch (uploadError) {
+          console.error(
+            ` Upload failed for file ${file.originalname}:`,
+            uploadError
+          );
+        }
+      }
+    }
 
     const newItem = await Item.create({
       name: itemTitle.trim(),
       description: description?.trim() || "",
       pickup: location.trim(),
       condition: condition.trim(),
-      donorId: userId, 
+      donorId: userId,
       isPaid: isPaid === "yes",
       price: finalPrice,
       urgent: urgentDonation === "on",
@@ -77,33 +116,26 @@ if (availableUntil) {
       categoryId: categoryDoc._id,
       subcategory: subcategory?.trim() || "",
       preferences: contactMethodsArray,
-      imageURL: req.files?.map(f => `/uploads/${f.filename}`) || [],
+      imageURL: imageURLs,
     });
 
     console.log(" Item created:", newItem._id);
 
-
-
-    res.status(201).json({
-      success: true,
-      message: "Donation created successfully!",
-      itemId: newItem._id,
-    });
-
-        const user = await User.findById(userId);
+    const user = await User.findById(userId);
     if (user) {
       user.points = (user.points || 0) + 10;
       await user.save();
-      console.log(` Awarded 10 points to user ${user._id}. Total points: ${user.points}`);
+      console.log(
+        ` Awarded 10 points to user ${user._id}. Total points: ${user.points}`
+      );
     }
 
     res.status(201).json({
       success: true,
-      message: "Donation created successfully! You earned 10 points ",
+      message: "Donation created successfully! You earned 10 points",
       itemId: newItem._id,
       newPoints: user?.points || 0,
     });
-
   } catch (err) {
     console.error(" ERROR:", err);
     res.status(500).json({

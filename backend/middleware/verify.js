@@ -27,10 +27,10 @@ export function verifyToken(req, res, next) {
     return res.status(401).json({ message: "Access token missing!" });
   }
   jwt.verify(token, process.env.JWT_ACCESS_SECRET, (err, payload) => {
-  if (err) return res.status(403).json({ message: "Invalid or expired token!" });
-  req.user = payload;
-  next();
-});
-
+    if (err)
+      return res.status(403).json({ message: "Invalid or expired token!" });
+    req.user = payload;
+    next();
+  });
 }
 export { generateAccessToken, generateRefreshToken };
