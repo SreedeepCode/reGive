@@ -5,9 +5,12 @@ const router = express.Router();
 
 router.get("/latest", async (req, res) => {
   try {
-    const latestItems = await Item.find()
+    const latestItems = await Item.find({ status: "available" }) 
       .sort({ createdAt: -1 })
-      .limit(10);
+      .limit(10)
+      .populate("categoryId", "name")
+      .populate("donorId", "displayName email phone")
+      .exec();
 
     res.json(latestItems);
   } catch (err) {
@@ -16,4 +19,8 @@ router.get("/latest", async (req, res) => {
   }
 });
 
+
 export default router;
+
+
+
