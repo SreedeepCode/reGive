@@ -17,6 +17,7 @@ import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authroutes.js";
 import frequentroutes from "./routes/frequentroutes.js";
 import leaderboardRoutes from "./routes/leaderboardroutes.js";
+import catalogRoutes from "./routes/catalogRoutes.js";
 import cors from "cors";
 import {
   generateAccessToken,
@@ -224,6 +225,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/item", itemRoutes);
 app.use("/api/user", userRoutes);
 app.use("/", homeRoutes);
+app.use("/api/catalog", catalogRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
