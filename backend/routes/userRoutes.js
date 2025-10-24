@@ -34,16 +34,4 @@ router.put("/user-profile", async (req, res) => {
   }
 });
 
-// Example in productRoutes.js
-router.get("/user/:id/products", async (req, res) => {
-  try {
-    const products = await Product.find({ owner: req.params.id });
-    res.json({ products });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to fetch products" });
-  }
-});
-
-
 export default router;
