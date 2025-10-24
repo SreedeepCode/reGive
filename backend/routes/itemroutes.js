@@ -28,7 +28,6 @@ router.put("/:id/claim", async (req, res) => {
 });
 router.get("/search", getSearchResults);
 
-// GET /api/item/my-items - get items donated by logged-in user
 router.get("/my-items", verifyToken, async (req, res) => {
   try {
     const items = await Item.find({ donorId: req.user.id }).sort({
@@ -57,8 +56,7 @@ router.delete("/:id", async (req, res) => {
         .json({ success: false, message: "Item not found" });
     }
 
-    // Only the donor can delete the item
-    if (!item.donorId.equals(req.user._id)) {
+    if (!item.donorId.equals(req.user.id)) {
       return res.status(403).json({
         success: false,
         message: "Not authorized to delete this item",

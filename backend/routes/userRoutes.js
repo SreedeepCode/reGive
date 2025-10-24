@@ -5,8 +5,6 @@ import { verifyToken } from "../middleware/verify.js";
 const router = express.Router();
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
-// GET /user-profile - Display user profile
-// PUT /user-profile - Update user profile
 router.put("/user-profile", verifyToken, async (req, res) => {
   try {
     const { name, phone, address } = req.body;
