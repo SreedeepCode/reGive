@@ -1,28 +1,21 @@
 import express from "express";
 import User from "../models/users.js";
+import { verifyToken } from "../middleware/verify.js";
 
 const router = express.Router();
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
 // GET /user-profile - Display user profile
-router.get("/user-profile", (req, res) => {
-  if (!req.isAuthenticated()) return res.redirect("/auth/google");
-  res.render("user-profile", { user: req.user });
-});
-
 // PUT /user-profile - Update user profile
-router.put("/user-profile", async (req, res) => {
-  if (!req.isAuthenticated())
-    return res.status(401).json({ message: "Not authenticated" });
-
+router.put("/user-profile", verifyToken, async (req, res) => {
   try {
     const { name, phone, address } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
-      req.user._id,
+      req.user.id,
       { name, phone, address },
       { new: true, runValidators: true }
-    ).select("-password");
+    );
 
     res.status(200).json({
       success: true,
