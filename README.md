@@ -84,20 +84,6 @@ The app will be available at `http://localhost:3000`.
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Here's how to get started:
-
-1. Fork the repository
-2. Create a new branch: `git checkout -b feature/your-feature-name`
-3. Make your changes and commit: `git commit -m "Add your message"`
-4. Push to your fork: `git push origin feature/your-feature-name`
-5. Open a Pull Request
-
-Please make sure your code follows the existing style and that all existing features still work before submitting a PR.
-
----
-
 ## 📜 License
 
 This project is open source. See the repository for license details.
@@ -109,7 +95,3 @@ This project is open source. See the repository for license details.
 **Sreedeep Rajeevan**
 - GitHub: [@SreedeepCode](https://github.com/SreedeepCode)
 - Email: sreedeeprajeevan@gmail.com
-
----
-
-*reGive — because every item deserves a second chance.*
