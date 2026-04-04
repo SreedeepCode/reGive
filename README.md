@@ -38,6 +38,7 @@ reGive/
 ├── backend/             # Express server, routes, models, controllers
 ├── frontend/            # Client-side assets and views
 ├── package.json
+├── package-lock.json
 └── README.md
 ```
 
@@ -105,8 +106,9 @@ This project is open source. See the repository for license details.
 
 ## 👤 Author
 
-**SreedeepCode**
+**Sreedeep Rajeevan**
 - GitHub: [@SreedeepCode](https://github.com/SreedeepCode)
+- Email: sreedeeprajeevan@gmail.com
 
 ---
 
