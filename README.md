@@ -87,11 +87,3 @@ The app will be available at `http://localhost:3000`.
 ## 📜 License
 
 This project is open source. See the repository for license details.
-
----
-
-## 👤 Author
-
-**Sreedeep Rajeevan**
-- GitHub: [@SreedeepCode](https://github.com/SreedeepCode)
-- Email: sreedeeprajeevan@gmail.com
