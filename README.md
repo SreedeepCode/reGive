@@ -81,9 +81,3 @@ npm start
 ```
 
 The app will be available at `http://localhost:3000`.
-
----
-
-## 📜 License
-
-This project is open source. See the repository for license details.
