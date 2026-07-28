@@ -2,8 +2,6 @@
 
 **reGive** is a community-driven web platform that connects people who want to donate items they no longer need with those who can put them to good use — giving things a second life instead of sending them to a landfill.
 
-🌐 **Live Demo:** [regive.onrender.com](https://regive.onrender.com)
-
 ---
 
 ## ✨ Features
